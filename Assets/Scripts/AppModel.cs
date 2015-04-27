@@ -11,10 +11,14 @@ using System.Collections.Generic;
 
 
 public class AppModel {	
+	// set this to false for the real thing
+	public static bool debugging = true;
+
 	// Game state
 	public static LevelInfo currentLevel { get; set; } // current level user is working on
 	public static string errorMessage { get; set; }
 	public static string currentUsername;
+	public static bool manualCarControls;
 
 	private static Dictionary<string,string> userScripts = new Dictionary<string,string>(); // users code for each level
 	private static LeaderBoardManager leaderBoardManager = new LeaderBoardManager();

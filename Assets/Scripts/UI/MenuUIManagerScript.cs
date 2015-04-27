@@ -96,9 +96,20 @@ public class MenuUIManagerScript : MonoBehaviour {
 	}
 
 	public void runBtnClick(){
-		Debug.Log ("Run button clicked.");
+		Debug.Log ("Run button clicked.");	
+		AppModel.manualCarControls = false;
+		run ();
+	}
+
+	public void manualBtnClick(){
+		Debug.Log ("Manual button clicked.");		
+		AppModel.manualCarControls = true;
+		run ();
+	}
+
+	private void run(){
 		Save ();
-		if (AppModel.currentUsername.Length != 0){
+		if (AppModel.debugging || AppModel.currentUsername.Length != 0){
 			Application.LoadLevel (AppModel.currentLevel.sceneName);
 		} else {
 			AppModel.errorMessage = "Enter a username!";

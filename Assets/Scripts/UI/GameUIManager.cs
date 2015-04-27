@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class GameUIManager : MonoBehaviour {
 
 	public GameObject raceTimePanel;
-	public Text raceTimeValueText, raceTimeMessageText;
+	public Text raceTimeValueText, raceTimeMessageText, raceTimeLiveText;
 
 	// Use this for initialization
 	void Start () {

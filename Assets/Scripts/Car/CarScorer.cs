@@ -29,6 +29,10 @@ public class CarScorer : MonoBehaviour {
 			score.path.Add (transform.position);
 	}
 
+	void Update(){
+		gameUIManager.raceTimeLiveText.text = (Time.time-startTime).To2dpString () + " s";
+	}
+
 	void OnTriggerEnter(Collider c){
 		if (!raceOver) {
 			// check finish line collider
@@ -40,17 +44,25 @@ public class CarScorer : MonoBehaviour {
 				score.timestamp = System.DateTime.Now;
 				score.userScript = AppModel.getCurrentUserScript ();
 
-				var lbm = AppModel.getLeaderboardManager ();
-				int improved = lbm.SubmitScore (AppModel.currentLevel, score);
+				// only submit score if not manual controls
+				if (!AppModel.manualCarControls){
+					var lbm = AppModel.getLeaderboardManager ();
+					int improved = lbm.SubmitScore (AppModel.currentLevel, score);
 
-				gameUIManager.raceTimePanel.SetActive (true);
-				gameUIManager.raceTimeValueText.text = score.raceTime.To2dpString () + " s";
-				if (improved > 0)
-					gameUIManager.raceTimeMessageText.text = "Goal! You beat your previous best!";
-				else if (improved < 0)
-					gameUIManager.raceTimeMessageText.text = "Worse than your previous best...";
-				else
-					gameUIManager.raceTimeMessageText.gameObject.SetActive(false);
+					gameUIManager.raceTimePanel.SetActive (true);
+					gameUIManager.raceTimeValueText.text = score.raceTime.To2dpString () + " s";
+					if (improved > 0)
+						gameUIManager.raceTimeMessageText.text = "Goal! You beat your previous best!";
+					else if (improved < 0)
+						gameUIManager.raceTimeMessageText.text = "Worse than your previous best...";
+					else
+						gameUIManager.raceTimeMessageText.gameObject.SetActive(false);
+				} else { // manual mode					
+					gameUIManager.raceTimePanel.SetActive (true);
+					gameUIManager.raceTimeValueText.text = score.raceTime.To2dpString () + " s";
+					gameUIManager.raceTimeMessageText.text = "You realise this doesn't count, right?";
+				}
+
 				raceOver=true;
 			}
 		}

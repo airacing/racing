@@ -25,9 +25,9 @@ public class JurassicExecute : MonoBehaviour {
 	private ScriptEngine engine;	
 	private bool running = false;
 
-	// Init the script stored in AppModel
+	// Init the script stored in AppModel, only if manual controls = false
 	void Start(){
-		if (AppModel.getCurrentUserScript() != null) {
+		if (!AppModel.manualCarControls && AppModel.getCurrentUserScript() != null) {
 			try {
 				LoadScript (AppModel.getCurrentUserScript());
 				Run ();
@@ -79,7 +79,6 @@ public class JurassicExecute : MonoBehaviour {
 	}
 
 	// stop running script
-	// (TODO: also stop the car)
 	public void Stop(){
 		running = false;
 	}

@@ -9,17 +9,19 @@ public class KeyboardController : MonoBehaviour {
 	}
 
 	void FixedUpdate () {
-		float v =  Input.GetAxis ("Vertical");
-		if ( v > 0 )
-			carControls.SetGas( v );
-		else
-			carControls.SetGas(0);
+		if (AppModel.manualCarControls) {
+			float v = Input.GetAxis ("Vertical");
+			if (v > 0)
+				carControls.SetGas (v);
+			else
+				carControls.SetGas (0);
 
-		if ( v <0 )
-			carControls.SetBrake(true);
-		else 
-			carControls.SetBrake(false);
+			if (v < 0)
+				carControls.SetBrake (true);
+			else 
+				carControls.SetBrake (false);
 
-		carControls.SetSteering(Input.GetAxis ("Horizontal"));
+			carControls.SetSteering (Input.GetAxis ("Horizontal"));
+		}
 	}
 }
