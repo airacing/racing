@@ -7,6 +7,8 @@ using System.Collections.Generic;
  * A leaderboard is just an ordered list of Scores.
  */
 using System;
+using System.IO;
+using System.Globalization;
 
 public class LeaderBoardManager {
 	private Dictionary<int,List<Score>> leaderboards = new Dictionary<int,List<Score>> ();
@@ -14,10 +16,39 @@ public class LeaderBoardManager {
 	// Load the leaderboard from where-ever it is persistently stored.
 	// if we are storing 
 	public void LoadLeaderboards(){
+		if (File.Exists("data.txt"))
+		{
+			string data = File.ReadAllText("data.txt");
+			string[] levelSplit = data.Split(new string[] {"[level-separator]"}, StringSplitOptions.RemoveEmptyEntries);
+			foreach (string levelStr in levelSplit) {
+				string[] contents = levelStr.Split(new string[] {"[line-separator]"}, StringSplitOptions.RemoveEmptyEntries);
+				int level = int.Parse(contents[0], CultureInfo.InvariantCulture);
+				int scoreCount = int.Parse(contents[1], CultureInfo.InvariantCulture);
+				List<Score> scores = new List<Score>();
+				string[] scoreSplitStr = (contents[2]).Split(new string[] {"[score-separator]"}, StringSplitOptions.RemoveEmptyEntries);
+				for (int i = 0; i < scoreCount; i++) {
+					Score score = Score.loadFromString(scoreSplitStr[i]);
+					scores.Add(score);
+				}
+				leaderboards[level] = scores;
+			}
+		}
 	}
 
 	// save leaderboards in persistence storage
 	public void StoreLeaderboards(){
+		string data = "";
+		foreach (KeyValuePair<int, List<Score>> entry in leaderboards) {
+			int level = entry.Key;
+			List<Score> scores = leaderboards[level];
+			data += level.ToString() + "[line-separator]";
+			data += scores.Count + "[line-separator]";
+			foreach (Score score in scores) 
+				data += score.ToString();
+			data += "[level-separator]";
+			Debug.Log("score count: " + scores.Count);
+		}
+		File.WriteAllText ("data.txt", data);
 	}
 
 	public List<Score> GetLeaderboard(LevelInfo level){
@@ -57,7 +88,7 @@ public class LeaderBoardManager {
 		lb.Sort ( (s1,s2) => s1.raceTime.CompareTo(s2.raceTime));
 		foreach (Score s in lb)
 			Debug.Log (s.ToString ()); // these are not printing in correct order!? (assuming the sorting is correct)
-
+		AppModel.saveLeaderBoard ();
 		return alreadyExists ? (improved ? 1:-1) : 0;
 	}
 }

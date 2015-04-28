@@ -25,6 +25,13 @@ public class AppModel {
 
 	public static string menuSceneName = "levelMenu";
 
+	public static void loadLeaderBoard() {
+		leaderBoardManager.LoadLeaderboards ();
+	}
+
+	public static void saveLeaderBoard() {
+		leaderBoardManager.StoreLeaderboards ();
+	}
 	// gets script for current level
 	// returns sample script if user hasnt written one yet
 	public static string getCurrentUserScript(){

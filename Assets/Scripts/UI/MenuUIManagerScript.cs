@@ -31,6 +31,7 @@ public class MenuUIManagerScript : MonoBehaviour {
 			AppModel.currentLevel = levels [currentLevelIndex]; // set level
 		else
 			currentLevelIndex = levels.IndexOf (AppModel.currentLevel);
+		AppModel.loadLeaderBoard ();
 		Refresh ();
 	}
 
@@ -136,5 +137,4 @@ public class MenuUIManagerScript : MonoBehaviour {
 			Refresh();
 		}
 	}
-
 }
