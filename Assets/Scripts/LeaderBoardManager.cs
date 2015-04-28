@@ -38,19 +38,19 @@ public class LeaderBoardManager {
 
 	// save leaderboards in persistence storage
 	public void StoreLeaderboards(){
-		string data = "";
+		System.Text.StringBuilder data = new System.Text.StringBuilder (30000 * 100);
 		foreach (KeyValuePair<int, Dictionary<string, Score>> entry in leaderboards) {
 			int level = entry.Key;
 			Dictionary<string, Score> value = leaderboards[level];
-			data += level.ToString() + "[line-separator]";
+			data.Append(level.ToString() + "[line-separator]");
 			foreach (KeyValuePair<string, Score> innerEntry in value) {
-				data += innerEntry.Key + "[inner-separator]";
-				data += innerEntry.Value.ToString() + "[inner-separator]";
-				data += "[score-separator]";
+				data.Append(innerEntry.Key + "[inner-separator]");
+				data.Append(innerEntry.Value.ToString() + "[inner-separator]");
+				data.Append("[score-separator]");
 			}
-			data += "[level-separator]";
+			data.Append("[level-separator]");
 		}
-		File.WriteAllText ("data.txt", data);
+		File.WriteAllText ("data.txt", data.ToString());
 	}
 
 	// returns sorted 
