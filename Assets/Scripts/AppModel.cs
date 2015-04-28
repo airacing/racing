@@ -19,17 +19,18 @@ public class AppModel {
 	public static string errorMessage { get; set; }
 	public static string currentUsername;
 	public static bool manualCarControls;
+	public static bool leaderboardsLoaded = false;
 
 	private static Dictionary<string,string> userScripts = new Dictionary<string,string>(); // users code for each level
 	private static LeaderBoardManager leaderBoardManager = new LeaderBoardManager();
 
 	public static string menuSceneName = "levelMenu";
 
-	public static void loadLeaderBoard() {
+	public static void LoadLeaderBoards() {
 		leaderBoardManager.LoadLeaderboards ();
 	}
 
-	public static void saveLeaderBoard() {
+	public static void StoreLeaderBoards() {
 		leaderBoardManager.StoreLeaderboards ();
 	}
 	// gets script for current level

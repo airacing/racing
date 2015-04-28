@@ -27,15 +27,27 @@ public class MenuUIManagerScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		// init currentLevel
 		if (AppModel.currentLevel == null)
 			AppModel.currentLevel = levels [currentLevelIndex]; // set level
 		else
 			currentLevelIndex = levels.IndexOf (AppModel.currentLevel);
-		AppModel.loadLeaderBoard ();
+
+		// load leaderboards
+		if (!AppModel.leaderboardsLoaded) {
+			AppModel.LoadLeaderBoards ();
+			AppModel.leaderboardsLoaded = true;
+		}
+
 		Refresh ();
 	}
 
-	// Save user code in AppModel
+	void OnApplicationQuit(){
+		// save leaderboards		
+		AppModel.StoreLeaderBoards ();
+	}
+
+	// Save state in AppModel
 	private void Save(){		
 		AppModel.setCurrentUserScript (codeInputFieldObj.GetComponent<InputField> ().text);	
 		AppModel.currentUsername = usernameInputFieldObj.GetComponent<InputField> ().text;

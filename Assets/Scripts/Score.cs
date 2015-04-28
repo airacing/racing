@@ -30,7 +30,7 @@ public class Score{
 		return result;
 	}
 
-	public static Score loadFromString(string str) {
+	public static Score LoadFromString(string str) {
 		Score res = new Score ();
 		string[] strArray = str.Split (new string[] {"[s-separator]"}, StringSplitOptions.None);
 		res.username = strArray [0];

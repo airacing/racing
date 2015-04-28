@@ -11,7 +11,8 @@ using System.IO;
 using System.Globalization;
 
 public class LeaderBoardManager {
-	private Dictionary<int,List<Score>> leaderboards = new Dictionary<int,List<Score>> ();
+	// score = leaderboards[level_id][username]
+	private Dictionary<int,Dictionary<string,Score>> leaderboards = new Dictionary<int,Dictionary<string,Score>> ();
 
 	// Load the leaderboard from where-ever it is persistently stored.
 	// if we are storing 
@@ -28,7 +29,7 @@ public class LeaderBoardManager {
 				foreach (string scoreStr in scoreSplitStr) {
 					string[] finalSplit = scoreStr.Split(new string[]{"[inner-separator]"}, StringSplitOptions.None);
 					string userName = finalSplit[0];
-					Score score = Score.loadFromString(finalSplit[1]);
+					Score score = Score.LoadFromString(finalSplit[1]);
 					leaderboards[level][userName] = score;
 				}
 			}
@@ -52,9 +53,12 @@ public class LeaderBoardManager {
 		File.WriteAllText ("data.txt", data);
 	}
 
+	// returns sorted 
 	public List<Score> GetLeaderboard(LevelInfo level){
 		if (leaderboards.ContainsKey(level.id)){
-			return leaderboards[level.id];
+			var l = new List<Score>(leaderboards[level.id].Values);
+			l.Sort ( (s1,s2) => (s1.raceTime.To2dp()!=s2.raceTime.To2dp())?s1.raceTime.CompareTo(s2.raceTime):s1.timestamp.CompareTo(s2.timestamp));
+			return l;
 		} else {
 			return null;
 		}
@@ -66,31 +70,23 @@ public class LeaderBoardManager {
 	 * (NOTE: would probably be better to use Dictionary for each leaderboard, except it might be harder to serialize etc.)
 	 */
 	public int SubmitScore(LevelInfo level, Score score){
+		//create new leaderboard for level, if one doesn't already exist
 		if (!leaderboards.ContainsKey (level.id))
-			leaderboards [level.id] = new List<Score> ();
+			leaderboards [level.id] = new Dictionary<string, Score>();
 		var lb = leaderboards [level.id];
 
 		// replace worse scores with new score
-		bool alreadyExists = false;
-		bool improved = false;
-		for (int i=0; i<lb.Count; i++) {
-			if (lb[i].username == score.username){				
-				alreadyExists = true;
-				if (lb[i].raceTime > score.raceTime){
-					lb[i] = score;
-					improved = true;
-				}
-				break;
-			}
+		int res; 
+		if (!lb.ContainsKey (score.username)) {
+			lb [score.username] = score;
+			res = 0;
+		} else if (lb [score.username].raceTime > score.raceTime) {
+			lb [score.username] = score;
+			res = 1;
+		} else {
+			res = -1;
 		}
-		if (!alreadyExists)
-			lb.Add (score);
-
-		lb.Sort ( (s1,s2) => s1.raceTime.CompareTo(s2.raceTime));
-		foreach (Score s in lb)
-			Debug.Log (s.ToString ()); // these are not printing in correct order!? (assuming the sorting is correct)
-		AppModel.saveLeaderBoard ();
-		return alreadyExists ? (improved ? 1:-1) : 0;
+		return res;
 	}
 }
 
