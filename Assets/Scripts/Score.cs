@@ -27,7 +27,6 @@ public class Score{
 		foreach(Vector3 vec in path) {
 			result += vec.x + " " + vec.y + " " + vec.z + " ";
 		}
-		result += "[score-separator]";
 		return result;
 	}
 

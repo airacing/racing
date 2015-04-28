@@ -23,14 +23,14 @@ public class LeaderBoardManager {
 			foreach (string levelStr in levelSplit) {
 				string[] contents = levelStr.Split(new string[] {"[line-separator]"}, StringSplitOptions.RemoveEmptyEntries);
 				int level = int.Parse(contents[0], CultureInfo.InvariantCulture);
-				int scoreCount = int.Parse(contents[1], CultureInfo.InvariantCulture);
-				List<Score> scores = new List<Score>();
-				string[] scoreSplitStr = (contents[2]).Split(new string[] {"[score-separator]"}, StringSplitOptions.RemoveEmptyEntries);
-				for (int i = 0; i < scoreCount; i++) {
-					Score score = Score.loadFromString(scoreSplitStr[i]);
-					scores.Add(score);
+				leaderboards[level] = new Dictionary<string, Score>();
+				string[] scoreSplitStr = (contents[1]).Split(new string[] {"[score-separator]"}, StringSplitOptions.RemoveEmptyEntries);
+				foreach (string scoreStr in scoreSplitStr) {
+					string[] finalSplit = scoreStr.Split(new string[]{"[inner-separator]"}, StringSplitOptions.None);
+					string userName = finalSplit[0];
+					Score score = Score.loadFromString(finalSplit[1]);
+					leaderboards[level][userName] = score;
 				}
-				leaderboards[level] = scores;
 			}
 		}
 	}
@@ -38,15 +38,16 @@ public class LeaderBoardManager {
 	// save leaderboards in persistence storage
 	public void StoreLeaderboards(){
 		string data = "";
-		foreach (KeyValuePair<int, List<Score>> entry in leaderboards) {
+		foreach (KeyValuePair<int, Dictionary<string, Score>> entry in leaderboards) {
 			int level = entry.Key;
-			List<Score> scores = leaderboards[level];
+			Dictionary<string, Score> value = leaderboards[level];
 			data += level.ToString() + "[line-separator]";
-			data += scores.Count + "[line-separator]";
-			foreach (Score score in scores) 
-				data += score.ToString();
+			foreach (KeyValuePair<string, Score> innerEntry in value) {
+				data += innerEntry.Key + "[inner-separator]";
+				data += innerEntry.Value.ToString() + "[inner-separator]";
+				data += "[score-separator]";
+			}
 			data += "[level-separator]";
-			Debug.Log("score count: " + scores.Count);
 		}
 		File.WriteAllText ("data.txt", data);
 	}
