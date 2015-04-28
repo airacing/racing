@@ -137,9 +137,4 @@ public class MenuUIManagerScript : MonoBehaviour {
 			Refresh();
 		}
 	}
-
-	void OnApplicationQuit() {
-		AppModel.saveLeaderBoard ();
-	}
-
 }

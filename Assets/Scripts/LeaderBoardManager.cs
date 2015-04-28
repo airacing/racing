@@ -88,7 +88,7 @@ public class LeaderBoardManager {
 		lb.Sort ( (s1,s2) => s1.raceTime.CompareTo(s2.raceTime));
 		foreach (Score s in lb)
 			Debug.Log (s.ToString ()); // these are not printing in correct order!? (assuming the sorting is correct)
-
+		AppModel.saveLeaderBoard ();
 		return alreadyExists ? (improved ? 1:-1) : 0;
 	}
 }
