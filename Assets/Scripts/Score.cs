@@ -33,7 +33,7 @@ public class Score{
 
 	public static Score loadFromString(string str) {
 		Score res = new Score ();
-		string[] strArray = str.Split (new string[] {"[s-separator]"}, StringSplitOptions.RemoveEmptyEntries);
+		string[] strArray = str.Split (new string[] {"[s-separator]"}, StringSplitOptions.None);
 		res.username = strArray [0];
 		res.userScript = strArray [1];
 		res.raceTime = float.Parse (strArray [2], CultureInfo.InvariantCulture.NumberFormat);
