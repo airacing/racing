@@ -18,16 +18,17 @@ public class Score{
 	public const string FMT = "O"; // Used for parsing datetime
 
 	public override string ToString(){
-		string result = "";
-		result += username + "[s-separator]";
-		result += userScript + "[s-separator]";
-		result += raceTime + "[s-separator]";
-		result += timestamp.ToString(FMT) + "[s-separator]";
-		result += path.Count + "[s-separator]";
+
+		System.Text.StringBuilder result = new System.Text.StringBuilder ((int)(30000*30*1.1));
+		result.Append(username + "[s-separator]");
+		result.Append(userScript + "[s-separator]");
+		result.Append(raceTime + "[s-separator]");
+		result.Append(timestamp.ToString(FMT) + "[s-separator]");
+		result.Append(path.Count + "[s-separator]");
 		foreach(Vector3 vec in path) {
-			result += vec.x + " " + vec.y + " " + vec.z + " ";
+			result.Append(vec.x + " " + vec.y + " " + vec.z + " ");
 		}
-		return result;
+		return result.ToString();
 	}
 
 	public static Score LoadFromString(string str) {
