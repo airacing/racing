@@ -22,6 +22,8 @@ public class MenuUIManagerScript : MonoBehaviour {
 
 	public Text leaderboardUsernamesText, leaderboardScoresText;
 
+	public Toggle toggle;
+
 	// GUI state
 	private int currentLevelIndex = 0; // current level selected in levelInfos
 
@@ -39,6 +41,7 @@ public class MenuUIManagerScript : MonoBehaviour {
 			AppModel.leaderboardsLoaded = true;
 		}
 
+		Time.timeScale = 1;
 		Refresh ();
 	}
 
@@ -108,6 +111,8 @@ public class MenuUIManagerScript : MonoBehaviour {
 		}
 	}
 
+	// UI event functions
+
 	public void runBtnClick(){
 		Debug.Log ("Run button clicked.");	
 		AppModel.manualCarControls = false;
@@ -118,6 +123,13 @@ public class MenuUIManagerScript : MonoBehaviour {
 		Debug.Log ("Manual button clicked.");		
 		AppModel.manualCarControls = true;
 		run ();
+	}
+
+	public void fastForward(){
+		if (toggle.isOn)
+			Time.timeScale = 3;
+		else
+			Time.timeScale = 1;
 	}
 
 	private void run(){

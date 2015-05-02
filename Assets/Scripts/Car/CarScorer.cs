@@ -13,15 +13,19 @@ using System;
 public class CarScorer : MonoBehaviour {
 	public GameUIManager gameUIManager; // for updating UI when race finishes
 
-	float startTime,endTime;
+	float startTime,endTime, collisionTime;
 
-	bool raceOver = false;
+	int numberOfCrashes;
+
+	bool raceOver, enteredSide = false;
 
 	Score score = new Score();
 
 	// Use this for initialization
 	void Start () {
 		startTime = Time.time;
+		collisionTime = Time.time;
+		numberOfCrashes = 0;
 	}
 
 	void FixedUpdate(){
@@ -30,7 +34,7 @@ public class CarScorer : MonoBehaviour {
 	}
 
 	void Update(){
-		gameUIManager.raceTimeLiveText.text = (Time.time-startTime).To2dpString () + " s";
+		gameUIManager.raceTimeLiveText.text = (Time.time-startTime).To2dpString () + " s"+"\nCrashes: "+numberOfCrashes;
 	}
 
 	void OnTriggerEnter(Collider c){
@@ -50,7 +54,7 @@ public class CarScorer : MonoBehaviour {
 					int improved = lbm.SubmitScore (AppModel.currentLevel, score);
 
 					gameUIManager.raceTimePanel.SetActive (true);
-					gameUIManager.raceTimeValueText.text = score.raceTime.To2dpString () + " s";
+					gameUIManager.raceTimeValueText.text = score.raceTime.To2dpString () + " s"+"\nCrashes: "+numberOfCrashes;
 					if (improved > 0)
 						gameUIManager.raceTimeMessageText.text = "Goal! You beat your previous best!";
 					else if (improved < 0)
@@ -59,12 +63,29 @@ public class CarScorer : MonoBehaviour {
 						gameUIManager.raceTimeMessageText.gameObject.SetActive(false);
 				} else { // manual mode					
 					gameUIManager.raceTimePanel.SetActive (true);
-					gameUIManager.raceTimeValueText.text = score.raceTime.To2dpString () + " s";
+					gameUIManager.raceTimeValueText.text = score.raceTime.To2dpString () + " s"+"\nCrashes: "+numberOfCrashes;
 					gameUIManager.raceTimeMessageText.text = "You realise this doesn't count, right?";
 				}
 
 				raceOver=true;
 			}
+			else if(c.gameObject.tag=="SidesOfRoad" && !enteredSide){
+				numberOfCrashes+=1;
+				enteredSide=true;
+			}
+		}
+	}
+
+	void OnTriggerExit(Collider c){
+		if (c.gameObject.tag == "SidesOfRoad") {
+			enteredSide=false;
+		}
+	}
+
+	void OnCollisionEnter(Collision c){
+		if (c.gameObject.tag == "Terrain" && Time.time - collisionTime > 5 && !enteredSide) {
+			collisionTime = Time.time;
+			numberOfCrashes += 1;
 		}
 	}
 
