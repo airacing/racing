@@ -47,14 +47,17 @@ public class CarScorer : MonoBehaviour {
 				score.raceTime = endTime - startTime;
 				score.timestamp = System.DateTime.Now;
 				score.userScript = AppModel.getCurrentUserScript ();
+				score.crashCount = numberOfCrashes;
+
+				gameUIManager.raceTimePanel.SetActive (true);
+				gameUIManager.raceTimeValueText.text = score.raceTime.To2dpString () + " s";
+				gameUIManager.raceTimeCrashesText.text = "(Crashes: "+score.crashCount + ")";
 
 				// only submit score if not manual controls
 				if (!AppModel.manualCarControls){
 					var lbm = AppModel.getLeaderboardManager ();
 					int improved = lbm.SubmitScore (AppModel.currentLevel, score);
 
-					gameUIManager.raceTimePanel.SetActive (true);
-					gameUIManager.raceTimeValueText.text = score.raceTime.To2dpString () + " s"+"\nCrashes: "+numberOfCrashes;
 					if (improved > 0)
 						gameUIManager.raceTimeMessageText.text = "Goal! You beat your previous best!";
 					else if (improved < 0)
@@ -62,8 +65,6 @@ public class CarScorer : MonoBehaviour {
 					else
 						gameUIManager.raceTimeMessageText.gameObject.SetActive(false);
 				} else { // manual mode					
-					gameUIManager.raceTimePanel.SetActive (true);
-					gameUIManager.raceTimeValueText.text = score.raceTime.To2dpString () + " s"+"\nCrashes: "+numberOfCrashes;
 					gameUIManager.raceTimeMessageText.text = "You realise this doesn't count, right?";
 				}
 

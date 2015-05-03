@@ -20,6 +20,7 @@ public class AppModel {
 	public static string currentUsername;
 	public static bool manualCarControls;
 	public static bool leaderboardsLoaded = false;
+	public static bool speedup = false, ghostCar = false;
 
 	private static Dictionary<string,string> userScripts = new Dictionary<string,string>(); // users code for each level
 	private static LeaderBoardManager leaderBoardManager = new LeaderBoardManager();

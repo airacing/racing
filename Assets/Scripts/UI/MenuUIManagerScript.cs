@@ -20,9 +20,13 @@ public class MenuUIManagerScript : MonoBehaviour {
 	public GameObject scriptDocsHolderObj;
 	public Text scriptDocsTextPrefab; // to create text instances for each scriptDoc
 
-	public Text leaderboardUsernamesText, leaderboardScoresText;
 
-	public Toggle toggle;
+	// leaderboard
+	public GameObject rankPanel, usernamePanel, raceTimePanel, userScriptButtonPanel; 
+	public Text leaderboardTextPrefab;
+	public Button leaderboardCopyScriptPrefab;
+
+	public Toggle speedupToggle, ghostCarToggle;
 
 	// GUI state
 	private int currentLevelIndex = 0; // current level selected in levelInfos
@@ -54,6 +58,8 @@ public class MenuUIManagerScript : MonoBehaviour {
 	private void Save(){		
 		AppModel.setCurrentUserScript (codeInputFieldObj.GetComponent<InputField> ().text);	
 		AppModel.currentUsername = usernameInputFieldObj.GetComponent<InputField> ().text;
+		AppModel.speedup = speedupToggle.isOn;
+		AppModel.ghostCar = ghostCarToggle.isOn;
 	}
 
 	// refresh UI according to AppModel state
@@ -62,26 +68,32 @@ public class MenuUIManagerScript : MonoBehaviour {
 		codeInputFieldObj.GetComponent<InputField> ().text = AppModel.getCurrentUserScript ();
 
 		// ** load docs **
+		{
+			// delete all current docs
 
-		// delete all current docs
-		List<GameObject> children = new List<GameObject>();
-		foreach (Transform child in scriptDocsHolderObj.transform) children.Add(child.gameObject);
-		children.ForEach(child => Destroy(child));
+			List<GameObject> children = new List<GameObject> ();
+			foreach (Transform child in scriptDocsHolderObj.transform)
+				children.Add (child.gameObject);
+			children.ForEach (child => Destroy (child));
 
-		// create new docs
-		foreach (string doc in AppModel.currentLevel.scriptDocs) {
-			Text docObj = (Text)Instantiate(scriptDocsTextPrefab);
-			docObj.text = doc;
-			docObj.transform.SetParent(scriptDocsHolderObj.transform,false);
+
+			// create new docs
+			foreach (string doc in AppModel.currentLevel.scriptDocs) {
+				Text docObj = (Text)Instantiate (scriptDocsTextPrefab);
+				docObj.text = doc;
+				docObj.transform.SetParent (scriptDocsHolderObj.transform, false);
+			}
 		}
 
 		// ** error message **
 		// display the error message, if it exists
-		Text errorMessageText = errorMessageTextObj.GetComponent<Text> ();
-		if (AppModel.errorMessage != null) {
-			errorMessageText.text = AppModel.errorMessage;
-		} else {
-			errorMessageText.text = "";
+		{
+			Text errorMessageText = errorMessageTextObj.GetComponent<Text> ();
+			if (AppModel.errorMessage != null) {
+				errorMessageText.text = AppModel.errorMessage;
+			} else {
+				errorMessageText.text = "";
+			}
 		}
 
 		// ** level name **
@@ -90,24 +102,46 @@ public class MenuUIManagerScript : MonoBehaviour {
 		// ** level image **
 		levelImageObj.sprite = AppModel.currentLevel.sprite;
 
+		// ** speedup + ghost***
+		speedupToggle.isOn = AppModel.speedup;
+		ghostCarToggle.isOn = AppModel.ghostCar;
+
 		// ** username **
 		if (AppModel.currentUsername != null)
 			usernameInputFieldObj.GetComponent<InputField> ().text = AppModel.currentUsername;
 
 		// ** highscores **
-		string usernames = "", scores = "";
-		var lb = AppModel.getLeaderboardManager ().GetLeaderboard (AppModel.currentLevel);
-		if (lb != null) {
-			foreach (Score s in lb) {
-				usernames += s.username + "\n";
-				scores += s.raceTime.To2dpString () + " s\n";
+		{
+			// delete all current highscore entries
+			List<GameObject> lbPanels = new List<GameObject>{rankPanel, usernamePanel, raceTimePanel, userScriptButtonPanel};
+			foreach (GameObject panel in lbPanels){
+				List<GameObject> children = new List<GameObject>();
+				foreach (Transform child in panel.transform) children.Add(child.gameObject);
+				children.ForEach(child => Destroy(child));
 			}
-			leaderboardUsernamesText.text = usernames.TrimEnd();
-			leaderboardScoresText.text = scores.TrimEnd();
-		} else {
-			//usernames = "noleaderboard";			
-			leaderboardUsernamesText.text = usernames;
-			leaderboardScoresText.text = scores;
+
+			List<Score> lb = AppModel.getLeaderboardManager ().GetLeaderboard (AppModel.currentLevel);
+			if (lb!=null){
+				int rank = 1;
+				foreach(Score score in lb){
+					Text rankText = (Text)Instantiate(leaderboardTextPrefab);
+					Text usernameText = (Text)Instantiate(leaderboardTextPrefab);
+					Text raceTimeText = (Text)Instantiate(leaderboardTextPrefab);
+					Button copyScriptButton = (Button)Instantiate(leaderboardCopyScriptPrefab);
+					rankText.text = rank + ".";
+					usernameText.text = score.username;
+					raceTimeText.text = score.raceTime.To2dpString()+" s";
+					Score capturedScore = score;
+					copyScriptButton.onClick.AddListener(() => codeInputFieldObj.GetComponent<InputField> ().text = capturedScore.userScript);
+
+					rankText.transform.SetParent (rankPanel.transform, false);
+					usernameText.transform.SetParent (usernamePanel.transform, false);
+					raceTimeText.transform.SetParent (raceTimePanel.transform, false);
+					copyScriptButton.transform.SetParent (userScriptButtonPanel.transform, false);
+
+					rank++;
+				}
+			}
 		}
 	}
 
@@ -116,23 +150,16 @@ public class MenuUIManagerScript : MonoBehaviour {
 	public void runBtnClick(){
 		Debug.Log ("Run button clicked.");	
 		AppModel.manualCarControls = false;
-		run ();
+		runRace ();
 	}
 
 	public void manualBtnClick(){
 		Debug.Log ("Manual button clicked.");		
 		AppModel.manualCarControls = true;
-		run ();
+		runRace ();
 	}
 
-	public void fastForward(){
-		if (toggle.isOn)
-			Time.timeScale = 3;
-		else
-			Time.timeScale = 1;
-	}
-
-	private void run(){
+	private void runRace(){
 		Save ();
 		if (AppModel.debugging || AppModel.currentUsername.Length != 0){
 			Application.LoadLevel (AppModel.currentLevel.sceneName);

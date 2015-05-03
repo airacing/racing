@@ -23,44 +23,35 @@ public class JurassicExecute : MonoBehaviour {
 	public List<Exposable> exposables = new List<Exposable>();
 	
 	private ScriptEngine engine;	
-	private bool running = false;
-
-	// Init the script stored in AppModel, only if manual controls = false
-	void Start(){
-		if (!AppModel.manualCarControls && AppModel.getCurrentUserScript() != null) {
-			try {
-				LoadScript (AppModel.getCurrentUserScript());
-				Run ();
-				AppModel.errorMessage = null;
-			} catch (JavaScriptException ex){
-				Debug.Log(ex.Message);
-				AppModel.errorMessage = ex.Message;
-				Stop ();
-				Application.LoadLevel(AppModel.menuSceneName);
-			}
-		}
-	}
+	public bool controllingCar = false;
 
 	// prepare user's script
+	// not running until this is called
 	public void LoadScript(string codeString){
-		// Create an instance of the Jurassic engine then expose some stuff to it.
-		engine = new ScriptEngine();
-		
-		// Arguments and returns of functions exposed to JavaScript must be of supported types.
-		// Supported types are bool, int, double, string, Jurassic.Null, Jurassic.Undefined
-		// and Jurassic.Library.ObjectInstance (or a derived type).
-		// More info: http://jurassic.codeplex.com/wikipage?title=Supported%20types
-		
-		// Examples of exposing some static classes to JavaScript using Jurassic's "seamless .NET interop" feature.
-		engine.EnableExposedClrTypes = true; // You must enable this in order to use interop feaure.
-		// Then pass the names and types of the classes you want to expose to SetGlobalValue().
-		engine.SetGlobalValue("Mathf", typeof(Mathf));
-		engine.SetGlobalValue("Input", typeof(Input));
-		engine.SetGlobalFunction("debugLog", new System.Action<string,double>(jsDebugLog));
-		
-		foreach (Exposable e in exposables)
-			e.Expose (engine);
-		engine.Evaluate (codeString);
+		try{
+			// Create an instance of the Jurassic engine then expose some stuff to it.
+			engine = new ScriptEngine();
+			
+			// Arguments and returns of functions exposed to JavaScript must be of supported types.
+			// Supported types are bool, int, double, string, Jurassic.Null, Jurassic.Undefined
+			// and Jurassic.Library.ObjectInstance (or a derived type).
+			// More info: http://jurassic.codeplex.com/wikipage?title=Supported%20types
+			
+			// Examples of exposing some static classes to JavaScript using Jurassic's "seamless .NET interop" feature.
+			engine.EnableExposedClrTypes = true; // You must enable this in order to use interop feaure.
+			// Then pass the names and types of the classes you want to expose to SetGlobalValue().
+			engine.SetGlobalValue("Mathf", typeof(Mathf));
+			engine.SetGlobalValue("Input", typeof(Input));
+			engine.SetGlobalFunction("debugLog", new System.Action<string,double>(jsDebugLog));
+			
+			foreach (Exposable e in exposables)
+				e.Expose (engine);
+			engine.Evaluate (codeString);
+		} catch (JavaScriptException ex){
+			Debug.Log(ex.Message);
+			AppModel.errorMessage = ex.Message;
+			Application.LoadLevel(AppModel.menuSceneName);
+		}
 	}
 
 	// log output to user 
@@ -72,20 +63,9 @@ public class JurassicExecute : MonoBehaviour {
 		}
 	}
 
-	// run script
-	public void Run(){
-		Assert.Test (engine != null);
-		running = true;
-	}
-
-	// stop running script
-	public void Stop(){
-		running = false;
-	}
-
 	// execute user update script at each physics timestep
 	void FixedUpdate(){
-		if (running) {
+		if (controllingCar) {
 			Assert.Test(engine!=null);
 			try{
 				engine.CallGlobalFunction("update");
@@ -93,7 +73,6 @@ public class JurassicExecute : MonoBehaviour {
 			} catch (JavaScriptException ex){
 				Debug.Log(ex.Message);
 				AppModel.errorMessage = ex.Message;
-				Stop ();
 				Application.LoadLevel(AppModel.menuSceneName);
 			}
 		}

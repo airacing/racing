@@ -3,13 +3,14 @@ using System.Collections;
 
 public class KeyboardController : MonoBehaviour {
 	private CarControls carControls;
+	public bool controllingCar = false; // only takes control of the car when this is true
 
 	void Start() {
 		carControls = GetComponent<CarControls> ();
 	}
 
 	void FixedUpdate () {
-		if (AppModel.manualCarControls) {
+		if (controllingCar) {
 			float v = Input.GetAxis ("Vertical");
 			if (v > 0)
 				carControls.SetGas (v);
