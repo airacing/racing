@@ -22,6 +22,8 @@ public class AppModel {
 	public static bool leaderboardsLoaded = false;
 	public static bool speedup = false, ghostCar = false;
 
+	public static string ghostName;
+
 	private static Dictionary<string,string> userScripts = new Dictionary<string,string>(); // users code for each level
 	private static LeaderBoardManager leaderBoardManager = new LeaderBoardManager();
 

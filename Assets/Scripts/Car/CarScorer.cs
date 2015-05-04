@@ -38,7 +38,7 @@ public class CarScorer : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(Collider c){
-		if (!raceOver) {
+		if (isActiveAndEnabled && !raceOver) {
 			// check finish line collider
 			if (c.gameObject.tag == "Finish") {
 				endTime = Time.time;

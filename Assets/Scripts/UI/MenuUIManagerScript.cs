@@ -19,7 +19,10 @@ public class MenuUIManagerScript : MonoBehaviour {
 
 	public GameObject scriptDocsHolderObj;
 	public Text scriptDocsTextPrefab; // to create text instances for each scriptDoc
-
+	
+	//+++++++++++++++++++++++
+	public InputField ghostnameInputFieldObj;
+	//+++++++++++++++++++++++
 
 	// leaderboard
 	public GameObject rankPanel, usernamePanel, raceTimePanel, userScriptButtonPanel; 
@@ -60,6 +63,9 @@ public class MenuUIManagerScript : MonoBehaviour {
 		AppModel.currentUsername = usernameInputFieldObj.GetComponent<InputField> ().text;
 		AppModel.speedup = speedupToggle.isOn;
 		AppModel.ghostCar = ghostCarToggle.isOn;
+		//++++++++++++++++++
+		AppModel.ghostName = ghostnameInputFieldObj.GetComponent<InputField> ().text;
+		//++++++++++++++++++
 	}
 
 	// refresh UI according to AppModel state
@@ -187,5 +193,9 @@ public class MenuUIManagerScript : MonoBehaviour {
 			AppModel.currentLevel = levels[currentLevelIndex];
 			Refresh();
 		}
+	}
+
+	public void QuitButtonClick(){
+		Application.Quit ();
 	}
 }

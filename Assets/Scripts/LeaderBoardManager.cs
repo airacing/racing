@@ -64,6 +64,16 @@ public class LeaderBoardManager {
 		}
 	}
 
+	
+	//++++++++++++++++++++++
+	// returns unsorted 
+	// dictionary form
+	public Dictionary<string, Score> GetLeaderboardUnsorted(LevelInfo level){
+		return leaderboards [level.id];
+	}
+	//++++++++++++++++++++++
+
+
 	/*
 	 * Maintains that there is only one score registered per username.
 	 * Returns whether the score was improved for the username.
