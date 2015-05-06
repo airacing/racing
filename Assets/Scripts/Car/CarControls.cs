@@ -87,6 +87,13 @@ public class CarControls : MonoBehaviour, JurassicExecute.Exposable {
 		tmp3 = wheelFRTrans.localEulerAngles;
 		tmp3.y = wheelFR.steerAngle - wheelFRTrans.localEulerAngles.z;
 		wheelFRTrans.localEulerAngles = tmp3;
+
+		AudioSource audio1;
+		AudioSource[] aSources;
+		aSources = GetComponents<AudioSource>();
+		audio1 = aSources[0];
+		
+		audio1.pitch = currentSpeed / topSpeed +1;
 	}
 	
 	void Control () {

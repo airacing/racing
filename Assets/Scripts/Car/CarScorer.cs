@@ -21,11 +21,19 @@ public class CarScorer : MonoBehaviour {
 
 	Score score = new Score();
 
+	private AudioSource audio2;
+	public AudioClip crash;
+	AudioSource[] aSources;
+
+
 	// Use this for initialization
 	void Start () {
 		startTime = Time.time;
 		collisionTime = Time.time;
 		numberOfCrashes = 0;
+
+		aSources = GetComponents<AudioSource>();
+		audio2 = aSources[1];
 	}
 
 	void FixedUpdate(){
@@ -84,9 +92,12 @@ public class CarScorer : MonoBehaviour {
 	}
 
 	void OnCollisionEnter(Collision c){
-		if (c.gameObject.tag == "Terrain" && Time.time - collisionTime > 5 && !enteredSide) {
-			collisionTime = Time.time;
-			numberOfCrashes += 1;
+		if (Time.time - collisionTime > 5 && !enteredSide) {
+			audio2.PlayOneShot (crash);
+			if (c.gameObject.tag == "Terrain") {
+				collisionTime = Time.time;
+				numberOfCrashes += 1;
+			}
 		}
 	}
 
