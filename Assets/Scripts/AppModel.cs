@@ -22,7 +22,7 @@ public class AppModel {
 	public static bool leaderboardsLoaded = false;
 	public static bool speedup = false, ghostCar = false;
 
-	public static string ghostName;
+	public static Score otherScore = null; // score of opponent or ghost
 
 	private static Dictionary<string,string> userScripts = new Dictionary<string,string>(); // users code for each level
 	private static LeaderBoardManager leaderBoardManager = new LeaderBoardManager();
@@ -54,6 +54,7 @@ public class AppModel {
 
 	// store user script
 	public static void setCurrentUserScript(string userScript){
+		Assert.Test (currentLevel != null,"no scene selected..!!");
 		userScripts[currentLevel.sceneName] = userScript;
 	}
 }

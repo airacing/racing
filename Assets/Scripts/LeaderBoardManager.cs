@@ -68,7 +68,7 @@ public class LeaderBoardManager {
 	//++++++++++++++++++++++
 	// returns unsorted 
 	// dictionary form
-	public Dictionary<string, Score> GetLeaderboardUnsorted(LevelInfo level){
+	public Dictionary<string, Score> GetLeaderboardDict(LevelInfo level){
 		return leaderboards [level.id];
 	}
 	//++++++++++++++++++++++

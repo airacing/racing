@@ -14,6 +14,12 @@ public class LevelInfo : ScriptableObject {
 	public int id; // unique level id
 	public string levelName; // label
 
+
+	//public enum OpponentMode{shadow,race};
+	//public OpponentMode mode;
+	public int mode;
+	public const int OPPONENT_MODE_GHOST=1, OPPONENT_MODE_PHYSCIAL=2;
+
 	public string sceneName; // scene to be loaded that is associated with this level
 	public Sprite sprite;
 
@@ -23,4 +29,5 @@ public class LevelInfo : ScriptableObject {
 	public List<string> scriptDocs; // documentation for the modules (exposables) supported by this level.
 
 	public string sampleCode;
+
 }

@@ -25,8 +25,8 @@ public class GameUIManager : MonoBehaviour {
 
 		// initialise ghost car if required/possible
 		if (AppModel.ghostCar) {
-			var lbDict = AppModel.getLeaderboardManager ().GetLeaderboardUnsorted (AppModel.currentLevel);
-			if (lbDict != null) {
+			var lbDict = AppModel.getLeaderboardManager ().GetLeaderboardDict (AppModel.currentLevel);
+			if (lbDict != null && lbDict.ContainsKey(AppModel.otherScore.username)) {
 				//Score score = lb [0]; // highest score
 				// TODO: enable ghost car, and set its script to the script stored in 'score' (the best script in the leaderboard)
 				//++++++++++++++++++++++++++++++++
@@ -34,7 +34,7 @@ public class GameUIManager : MonoBehaviour {
 				// not be stable in each run (and we can't get rid of it without having a new highscore)
 				ghostCar.SetActive(true);
 				
-				Score score = lbDict[AppModel.ghostName];
+				Score score = lbDict[AppModel.otherScore.username];
 				string ghostScript = score.userScript;
 				
 				JurassicExecute je = ghostCar.GetComponent<JurassicExecute>();

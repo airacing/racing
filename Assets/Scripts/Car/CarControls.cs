@@ -91,9 +91,10 @@ public class CarControls : MonoBehaviour, JurassicExecute.Exposable {
 		AudioSource audio1;
 		AudioSource[] aSources;
 		aSources = GetComponents<AudioSource>();
-		audio1 = aSources[0];
-		
-		audio1.pitch = currentSpeed / topSpeed +1;
+		if (aSources.Length != 0) {
+			audio1 = aSources [0];			
+			audio1.pitch = currentSpeed / topSpeed + 1;
+		}
 	}
 	
 	void Control () {

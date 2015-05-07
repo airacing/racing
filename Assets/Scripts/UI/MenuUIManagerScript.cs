@@ -12,21 +12,19 @@ public class MenuUIManagerScript : MonoBehaviour {
 	[SerializeField]
 	public List<LevelInfo> levels = new List<LevelInfo> ();
 
-	public InputField codeInputFieldObj, usernameInputFieldObj;
+	public InputField codeInputFieldObj, usernameInputFieldObj, opponentUsernameInputFieldObj;
 	public Text levelNameTextObj, errorMessageTextObj;
 
 	public Image levelImageObj;
 
 	public GameObject scriptDocsHolderObj;
 	public Text scriptDocsTextPrefab; // to create text instances for each scriptDoc
-	
-	//+++++++++++++++++++++++
-	public InputField ghostnameInputFieldObj;
-	//+++++++++++++++++++++++
+
 
 	// leaderboard
 	public GameObject rankPanel, usernamePanel, raceTimePanel, userScriptButtonPanel; 
 	public Text leaderboardTextPrefab;
+	public GameObject leaderboardUsernamePrefab;
 	public Button leaderboardCopyScriptPrefab;
 
 	public Toggle speedupToggle, ghostCarToggle;
@@ -48,7 +46,6 @@ public class MenuUIManagerScript : MonoBehaviour {
 			AppModel.leaderboardsLoaded = true;
 		}
 
-		Time.timeScale = 1;
 		Refresh ();
 	}
 
@@ -62,21 +59,38 @@ public class MenuUIManagerScript : MonoBehaviour {
 		AppModel.setCurrentUserScript (codeInputFieldObj.GetComponent<InputField> ().text);	
 		AppModel.currentUsername = usernameInputFieldObj.GetComponent<InputField> ().text;
 		AppModel.speedup = speedupToggle.isOn;
-		AppModel.ghostCar = ghostCarToggle.isOn;
-		//++++++++++++++++++
-		AppModel.ghostName = ghostnameInputFieldObj.GetComponent<InputField> ().text;
-		//++++++++++++++++++
+
+		// attempt to set the opponent score
+		string otherUsername = opponentUsernameInputFieldObj.text;
+		var lbDict = AppModel.getLeaderboardManager ().GetLeaderboardDict (AppModel.currentLevel);
+		if (lbDict.ContainsKey (otherUsername)) {
+			AppModel.otherScore = lbDict [otherUsername];
+			AppModel.ghostCar = true;
+		} else {
+			AppModel.ghostCar = false;
+		}
 	}
 
 	// refresh UI according to AppModel state
 	private void Refresh(){
+		// change race mode UI
+		if (AppModel.currentLevel.mode == LevelInfo.OPPONENT_MODE_GHOST) {
+			((Text)opponentUsernameInputFieldObj.placeholder).text = "(Ghost username...)";
+		} else {
+			((Text)opponentUsernameInputFieldObj.placeholder).text = "Opponent username...";
+		}
+
+		if (AppModel.otherScore != null)
+			opponentUsernameInputFieldObj.text = AppModel.otherScore.username;
+		else
+			opponentUsernameInputFieldObj.text = "";
+
 		// load user script
 		codeInputFieldObj.GetComponent<InputField> ().text = AppModel.getCurrentUserScript ();
 
 		// ** load docs **
 		{
 			// delete all current docs
-
 			List<GameObject> children = new List<GameObject> ();
 			foreach (Transform child in scriptDocsHolderObj.transform)
 				children.Add (child.gameObject);
@@ -131,11 +145,21 @@ public class MenuUIManagerScript : MonoBehaviour {
 				int rank = 1;
 				foreach(Score score in lb){
 					Text rankText = (Text)Instantiate(leaderboardTextPrefab);
-					Text usernameText = (Text)Instantiate(leaderboardTextPrefab);
+
+					GameObject usernameObj = (GameObject)Instantiate(leaderboardUsernamePrefab);
+					//Button usernameButton = usernameObj.GetComponent<Button>();
+					Text usernameText = usernameObj.GetComponent<Text>();
+
 					Text raceTimeText = (Text)Instantiate(leaderboardTextPrefab);
 					Button copyScriptButton = (Button)Instantiate(leaderboardCopyScriptPrefab);
+
 					rankText.text = rank + ".";
 					usernameText.text = score.username;
+					/*if (AppModel.otherScore!=null && AppModel.otherScore.username == score.username){ // bug careful
+						usernameText.fontStyle = FontStyle.Bold;
+						usernameText.color = Color.blue;
+					}*/
+
 					raceTimeText.text = score.raceTime.To2dpString()+" s";
 					Score capturedScore = score;
 					copyScriptButton.onClick.AddListener(() => codeInputFieldObj.GetComponent<InputField> ().text = capturedScore.userScript);
@@ -144,6 +168,16 @@ public class MenuUIManagerScript : MonoBehaviour {
 					usernameText.transform.SetParent (usernamePanel.transform, false);
 					raceTimeText.transform.SetParent (raceTimePanel.transform, false);
 					copyScriptButton.transform.SetParent (userScriptButtonPanel.transform, false);
+
+					/*usernameButton.onClick.AddListener(() => {
+						// if selected as opponent, deselect
+						if (AppModel.otherScore!=null && AppModel.otherScore.username == capturedScore.username){
+							AppModel.otherScore = null;
+						} else {
+							AppModel.otherScore = capturedScore;
+						}
+						Refresh();
+					});*/
 
 					rank++;
 				}
@@ -165,14 +199,27 @@ public class MenuUIManagerScript : MonoBehaviour {
 		runRace ();
 	}
 
+	// check params, and if they check out, load level scene
+	// else, show error
 	private void runRace(){
-		Save ();
-		if (AppModel.debugging || AppModel.currentUsername.Length != 0){
-			Application.LoadLevel (AppModel.currentLevel.sceneName);
-		} else {
-			AppModel.errorMessage = "Enter a username!";
+		// validate username
+		if (!AppModel.debugging && (AppModel.currentUsername.Length < 3 || AppModel.currentUsername.Length > 12)){			
+			AppModel.errorMessage = "Username must be between 3-12 characters.";
 			Refresh();
+			return;
 		}
+		// check opponent username exists
+		string otherUsername = opponentUsernameInputFieldObj.text;
+		if (otherUsername.Length != 0) {
+			var lbDict = AppModel.getLeaderboardManager ().GetLeaderboardDict (AppModel.currentLevel);
+			if (!lbDict.ContainsKey (otherUsername)) {
+				AppModel.errorMessage = (AppModel.currentLevel.mode==LevelInfo.OPPONENT_MODE_GHOST ? "Ghost" : "Opponent") +" username does not exist in the leaderboard!";
+				Refresh();
+				return;
+			}
+		}
+		Save ();
+		Application.LoadLevel (AppModel.currentLevel.sceneName);
 	}
 
 	public void prevBtnClick(){
