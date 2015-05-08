@@ -64,15 +64,12 @@ public class LeaderBoardManager {
 		}
 	}
 
-	
-	//++++++++++++++++++++++
-	// returns unsorted 
 	// dictionary form
 	public Dictionary<string, Score> GetLeaderboardDict(LevelInfo level){
-		return leaderboards [level.id];
+		if (leaderboards.ContainsKey(level.id))
+			return leaderboards [level.id];
+		return null;
 	}
-	//++++++++++++++++++++++
-
 
 	/*
 	 * Maintains that there is only one score registered per username.

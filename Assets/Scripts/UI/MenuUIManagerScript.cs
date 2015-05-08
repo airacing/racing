@@ -63,10 +63,11 @@ public class MenuUIManagerScript : MonoBehaviour {
 		// attempt to set the opponent score
 		string otherUsername = opponentUsernameInputFieldObj.text;
 		var lbDict = AppModel.getLeaderboardManager ().GetLeaderboardDict (AppModel.currentLevel);
-		if (lbDict.ContainsKey (otherUsername)) {
+		if (lbDict != null && otherUsername.Length!=0 && lbDict.ContainsKey (otherUsername)) {
 			AppModel.otherScore = lbDict [otherUsername];
 			AppModel.ghostCar = true;
 		} else {
+			AppModel.otherScore = null;
 			AppModel.ghostCar = false;
 		}
 	}
@@ -201,7 +202,8 @@ public class MenuUIManagerScript : MonoBehaviour {
 
 	// check params, and if they check out, load level scene
 	// else, show error
-	private void runRace(){
+	private void runRace(){		
+		Save ();
 		// validate username
 		if (!AppModel.debugging && (AppModel.currentUsername.Length < 3 || AppModel.currentUsername.Length > 12)){			
 			AppModel.errorMessage = "Username must be between 3-12 characters.";
@@ -212,13 +214,16 @@ public class MenuUIManagerScript : MonoBehaviour {
 		string otherUsername = opponentUsernameInputFieldObj.text;
 		if (otherUsername.Length != 0) {
 			var lbDict = AppModel.getLeaderboardManager ().GetLeaderboardDict (AppModel.currentLevel);
-			if (!lbDict.ContainsKey (otherUsername)) {
-				AppModel.errorMessage = (AppModel.currentLevel.mode==LevelInfo.OPPONENT_MODE_GHOST ? "Ghost" : "Opponent") +" username does not exist in the leaderboard!";
-				Refresh();
+			if (lbDict == null || !lbDict.ContainsKey (otherUsername)) {
+				AppModel.errorMessage = (AppModel.currentLevel.mode == LevelInfo.OPPONENT_MODE_GHOST ? "Ghost" : "Opponent") + " username does not exist in the leaderboard!";
+				Refresh ();
 				return;
 			}
+		} else if (AppModel.currentLevel.mode == LevelInfo.OPPONENT_MODE_PHYSCIAL) {
+			AppModel.errorMessage = "Must specify opponent username!";
+			Refresh();
+			return;
 		}
-		Save ();
 		Application.LoadLevel (AppModel.currentLevel.sceneName);
 	}
 

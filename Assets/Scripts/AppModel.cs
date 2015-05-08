@@ -12,7 +12,7 @@ using System.Collections.Generic;
 
 public class AppModel {	
 	// set this to false for the real thing
-	public static bool debugging = true;
+	public static bool debugging = false;
 
 	// Game state
 	public static LevelInfo currentLevel { get; set; } // current level user is working on

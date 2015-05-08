@@ -47,7 +47,7 @@ public class JurassicExecute : MonoBehaviour {
 			foreach (Exposable e in exposables)
 				e.Expose (engine);
 			engine.Evaluate (codeString);
-		} catch (JavaScriptException ex){
+		} catch (Exception ex){
 			Debug.Log(ex.Message);
 			AppModel.errorMessage = ex.Message;
 			Application.LoadLevel(AppModel.menuSceneName);
@@ -70,7 +70,7 @@ public class JurassicExecute : MonoBehaviour {
 			try{
 				engine.CallGlobalFunction("update");
 				AppModel.errorMessage = null;
-			} catch (JavaScriptException ex){
+			} catch (Exception ex){
 				Debug.Log(ex.Message);
 				AppModel.errorMessage = ex.Message;
 				Application.LoadLevel(AppModel.menuSceneName);

@@ -5,8 +5,7 @@ using System.Collections.Generic;
 /* 
  * Measures distances to left/right/center of road, from global coordinates
  * Could be extended to measure progress along the road, for example.
- * TODO: distance to next turn.
- * TODO?: angle of road segment closest to point.
+ * distance to next turn.
  */
 
 
@@ -52,8 +51,8 @@ public class RoadMeasure : MonoBehaviour {
 		int segment = ClosestSegment (roadLines.center, point);
 
 		if (segment + 2 < roadLines.center.Count)
-			return SignedAngle2 ((roadLines.center [segment + 2] - roadLines.center [segment + 1]).ToXZVector2 (),
-			                      (roadLines.center [segment + 1] - roadLines.center [segment]).ToXZVector2 ());
+			return Vector2Extensions.SignedAngle2 ((roadLines.center [segment + 1] - roadLines.center [segment]).ToXZVector2 (),
+			                      (roadLines.center [segment + 2] - roadLines.center [segment+1]).ToXZVector2 ());
 		else
 			return 0f;
 	}
@@ -74,8 +73,8 @@ public class RoadMeasure : MonoBehaviour {
 		int segment = ClosestSegment (roadLines.center, point)-1;
 		
 		if (segment >= 0 && segment + 2 < roadLines.center.Count)
-			return SignedAngle2 ((roadLines.center [segment + 2] - roadLines.center [segment + 1]).ToXZVector2 (),
-			                      (roadLines.center [segment + 1] - roadLines.center [segment]).ToXZVector2 ());
+			return Vector2Extensions.SignedAngle2 ((roadLines.center [segment + 1] - roadLines.center [segment]).ToXZVector2 (),
+			                      (roadLines.center [segment + 2] - roadLines.center [segment+1]).ToXZVector2 ());
 		else
 			return 0f;
 	}
@@ -121,10 +120,7 @@ public class RoadMeasure : MonoBehaviour {
 		}
 	}	
 
-	float SignedAngle2(Vector2 from, Vector2 to){
-		int sign = Vector3.Cross(to.ToVector3(), from.ToVector3()).y < 0 ? -1 : 1;
-		return sign*Vector2.Angle(from,to);		
-	}
+
 	#endregion
 
 }

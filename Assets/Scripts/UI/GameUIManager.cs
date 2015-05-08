@@ -7,7 +7,7 @@ public class GameUIManager : MonoBehaviour {
 	public GameObject raceTimePanel;
 	public Text raceTimeValueText, raceTimeCrashesText, raceTimeMessageText, raceTimeLiveText;
 
-	public GameObject mainCar, ghostCar;
+	public GameObject mainCar, otherCar;
 
 	// Use this for initialization
 	void Start () {
@@ -23,7 +23,7 @@ public class GameUIManager : MonoBehaviour {
 			je.controllingCar = true; // enable scripted controls
 		}
 
-		// initialise ghost car if required/possible
+		// initialise other car if required/possible
 		if (AppModel.ghostCar) {
 			var lbDict = AppModel.getLeaderboardManager ().GetLeaderboardDict (AppModel.currentLevel);
 			if (lbDict != null && lbDict.ContainsKey(AppModel.otherScore.username)) {
@@ -32,12 +32,12 @@ public class GameUIManager : MonoBehaviour {
 				//++++++++++++++++++++++++++++++++
 				// gonna change it so the ghost car doesn't have to use the "best" script, cuz they might
 				// not be stable in each run (and we can't get rid of it without having a new highscore)
-				ghostCar.SetActive(true);
+				otherCar.SetActive(true);
 				
 				Score score = lbDict[AppModel.otherScore.username];
 				string ghostScript = score.userScript;
 				
-				JurassicExecute je = ghostCar.GetComponent<JurassicExecute>();
+				JurassicExecute je = otherCar.GetComponent<JurassicExecute>();
 				je.LoadScript(ghostScript);
 				je.controllingCar = true; // enable scripted controls
 				//++++++++++++++++++++++++++++++++
