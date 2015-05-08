@@ -44,6 +44,8 @@ public class CarControls : MonoBehaviour, JurassicExecute.Exposable {
 
 	int[] gearRatio;
 
+	bool enableAudio = false;
+
 	AudioSource audio1;
 	AudioSource[] aSources;
 
@@ -71,14 +73,19 @@ public class CarControls : MonoBehaviour, JurassicExecute.Exposable {
 		//originalTransformPosition = transform.position;
 		//originalTransformRotation = transform.rotation;
 
-		gearRatio = new int[4];
-		gearRatio [0] = (int)topSpeed / 4;
-		gearRatio [1] = (int)topSpeed / 2;
-		gearRatio [2] = (int)topSpeed * 3 / 4;
-		gearRatio [3] = (int)topSpeed + 5;
-
 		aSources = GetComponents<AudioSource>();
+		if (aSources.Length >= 2)
+			enableAudio = true; // only enable if there are sounds available
+
+		if (enableAudio) {
 			audio1 = aSources [0];
+
+			gearRatio = new int[4];
+			gearRatio [0] = (int)topSpeed / 4;
+			gearRatio [1] = (int)topSpeed / 2;
+			gearRatio [2] = (int)topSpeed * 3 / 4;
+			gearRatio [3] = (int)topSpeed + 5;
+		}
 	}
 	
 	// each physics timestep
@@ -102,7 +109,8 @@ public class CarControls : MonoBehaviour, JurassicExecute.Exposable {
 		tmp3.y = wheelFR.steerAngle - wheelFRTrans.localEulerAngles.z;
 		wheelFRTrans.localEulerAngles = tmp3;
 
-		EngineSound ();
+		if (enableAudio)
+			EngineSound ();
 	}
 	
 	void Control () {

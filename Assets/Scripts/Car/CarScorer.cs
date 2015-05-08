@@ -24,6 +24,7 @@ public class CarScorer : MonoBehaviour {
 	private AudioSource audio2;
 	public AudioClip crash;
 	AudioSource[] aSources;
+	bool enableAudio = false;
 
 
 	// Use this for initialization
@@ -33,6 +34,10 @@ public class CarScorer : MonoBehaviour {
 		numberOfCrashes = 0;
 
 		aSources = GetComponents<AudioSource>();
+		if (aSources.Length >= 2)
+			enableAudio = true;
+
+		if (enableAudio)
 			audio2 = aSources[1];
 	}
 
@@ -93,7 +98,9 @@ public class CarScorer : MonoBehaviour {
 
 	void OnCollisionEnter(Collision c){
 		if (Time.time - collisionTime > 2) {
-			audio2.PlayOneShot (crash);
+			if (enableAudio)
+				audio2.PlayOneShot (crash);
+
 			//if (c.gameObject.tag == "Terrain") {
 			if (Time.time - collisionTime > 4 && !enteredSide) {
 				collisionTime = Time.time;
