@@ -42,6 +42,11 @@ public class CarControls : MonoBehaviour, JurassicExecute.Exposable {
 		slipSidewaysFriction,
 		slipForwardFriction;
 
+	int[] gearRatio;
+
+	AudioSource audio1;
+	AudioSource[] aSources;
+
 	//private Vector3	originalTransformPosition;
 	//private Quaternion originalTransformRotation;
 	
@@ -65,6 +70,17 @@ public class CarControls : MonoBehaviour, JurassicExecute.Exposable {
 
 		//originalTransformPosition = transform.position;
 		//originalTransformRotation = transform.rotation;
+
+		gearRatio = new int[4];
+		gearRatio [0] = (int)topSpeed / 4;
+		gearRatio [1] = (int)topSpeed / 2;
+		gearRatio [2] = (int)topSpeed * 3 / 4;
+		gearRatio [3] = (int)topSpeed + 5;
+
+		aSources = GetComponents<AudioSource>();
+		if (aSources.Length != 0) {
+			audio1 = aSources [0];
+		}
 	}
 	
 	// each physics timestep
@@ -88,13 +104,7 @@ public class CarControls : MonoBehaviour, JurassicExecute.Exposable {
 		tmp3.y = wheelFR.steerAngle - wheelFRTrans.localEulerAngles.z;
 		wheelFRTrans.localEulerAngles = tmp3;
 
-		AudioSource audio1;
-		AudioSource[] aSources;
-		aSources = GetComponents<AudioSource>();
-		if (aSources.Length != 0) {
-			audio1 = aSources [0];			
-			audio1.pitch = currentSpeed / topSpeed + 1;
-		}
+		EngineSound ();
 	}
 	
 	void Control () {
@@ -166,6 +176,28 @@ public class CarControls : MonoBehaviour, JurassicExecute.Exposable {
 		t = wheelRL.forwardFriction;
 		t.stiffness=currentForwardFriction;
 		wheelRL.forwardFriction = t;
+	}
+
+	void EngineSound(){
+		//audio1.pitch = currentSpeed / topSpeed + 1;
+		int i = 0;
+		for (i = 0; i < gearRatio.Length; i++) {
+			if (gearRatio [i] > currentSpeed) {
+				break;
+			}
+		}
+
+		float gearMin = 0;
+		float gearMax = 0;
+		if (i == 0) {
+			gearMin = 0;
+			gearMax = gearRatio [i];
+		} else {
+			gearMin = gearRatio [i - 1];
+			gearMax = gearRatio [i];
+		}
+		float enginePitch = ((currentSpeed - gearMin) / (gearMax - gearMin)) + 1;
+		audio1.pitch = enginePitch;
 	}
 
 	public void SetGas(float x){
