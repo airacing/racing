@@ -33,7 +33,6 @@ public class CarScorer : MonoBehaviour {
 		numberOfCrashes = 0;
 
 		aSources = GetComponents<AudioSource>();
-		if (aSources.Length>=2)
 			audio2 = aSources[1];
 	}
 
@@ -93,12 +92,13 @@ public class CarScorer : MonoBehaviour {
 	}
 
 	void OnCollisionEnter(Collision c){
-		if (Time.time - collisionTime > 5 && !enteredSide) {
-			if (audio2!=null)
-				audio2.PlayOneShot (crash);
-			if (c.gameObject.tag == "Terrain") {
+		if (Time.time - collisionTime > 2) {
+			audio2.PlayOneShot (crash);
+			//if (c.gameObject.tag == "Terrain") {
+			if (Time.time - collisionTime > 4 && !enteredSide) {
 				collisionTime = Time.time;
 				numberOfCrashes += 1;
+				//}
 			}
 		}
 	}

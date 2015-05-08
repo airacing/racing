@@ -78,9 +78,7 @@ public class CarControls : MonoBehaviour, JurassicExecute.Exposable {
 		gearRatio [3] = (int)topSpeed + 5;
 
 		aSources = GetComponents<AudioSource>();
-		if (aSources.Length != 0) {
 			audio1 = aSources [0];
-		}
 	}
 	
 	// each physics timestep
