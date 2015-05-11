@@ -42,7 +42,10 @@ public class JurassicExecute : MonoBehaviour {
 			// Then pass the names and types of the classes you want to expose to SetGlobalValue().
 			engine.SetGlobalValue("Mathf", typeof(Mathf));
 			engine.SetGlobalValue("Input", typeof(Input));
-			engine.SetGlobalFunction("debugLog", new System.Action<string,double>(jsDebugLog));
+			engine.SetGlobalFunction("log", new System.Action<string,double>(jsDebugLog));
+			engine.SetGlobalFunction("min", new System.Func<double,double,double>(jsMin));
+			engine.SetGlobalFunction("max", new System.Func<double,double,double>(jsMax));
+			engine.SetGlobalFunction("clamp", new System.Func<double,double,double>(jsClamp));
 			
 			foreach (Exposable e in exposables)
 				e.Expose (engine);
@@ -61,6 +64,19 @@ public class JurassicExecute : MonoBehaviour {
 			// TODO: replace this with in-game debug console
 			Debug.Log (s);
 		}
+	}
+
+	public double jsMin(double x, double y){
+		return x < y ? x : y;
+	}
+	public double jsMax(double x, double y){
+		return x > y ? x : y;
+	}
+	
+	public double jsClamp(double x, double y){
+		if (x < 0)
+			return -jsClamp (-x,y);
+		return x < y ? x : y;
 	}
 
 	// execute user update script at each physics timestep

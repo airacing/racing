@@ -34,8 +34,8 @@ public class CarOpponentSensors : MonoBehaviour, JurassicExecute.Exposable {
 	 */
 	public void Expose(ScriptEngine engine){
 		// The generic System.Func delegate is used to define method signatures with return types;
-		engine.SetGlobalFunction("getOpponentDistance", new System.Func<double>(jsGetOpponentDistance));
-		engine.SetGlobalFunction("getOpponentAngle", new System.Func<double>(jsGetOpponentAngle));
+		engine.SetGlobalFunction("oppDist", new System.Func<double>(jsGetOpponentDistance));
+		engine.SetGlobalFunction("oppAngle", new System.Func<double>(jsGetOpponentAngle));
 	}
 	
 	// type double. (float is not a supported type in Jurassic)

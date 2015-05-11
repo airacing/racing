@@ -34,7 +34,7 @@ public class CarDashboard : MonoBehaviour, JurassicExecute.Exposable {
 	 */
 	public void Expose(ScriptEngine engine){
 		// The generic System.Func delegate is used to define method signatures with return types;
-		engine.SetGlobalFunction("getSpeed", new System.Func<double>(jsGetSpeed));
+		engine.SetGlobalFunction("speed", new System.Func<double>(jsGetSpeed));
 	}
 	
 	// type double. (float is not a supported type in Jurassic)

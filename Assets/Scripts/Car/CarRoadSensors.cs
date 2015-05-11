@@ -65,12 +65,12 @@ public class CarRoadSensors : MonoBehaviour, JurassicExecute.Exposable {
 	 */
 	public void Expose(ScriptEngine engine){
 		// The generic System.Func delegate is used to define method signatures with return types;
-		engine.SetGlobalFunction("getLeftDistance", new System.Func<double>(jsGetDistanceFromLeft));
-		engine.SetGlobalFunction("getRightDistance", new System.Func<double>(jsGetDistanceFromRight));
-		engine.SetGlobalFunction("getNextTurnDistance", new System.Func<double>(jsGetNextTurnDistance));
-		engine.SetGlobalFunction("getNextTurnAngle", new System.Func<double>(jsGetNextTurnAngle));		
-		engine.SetGlobalFunction("getPreviousTurnDistance", new System.Func<double>(jsGetPreviousTurnDistance));
-		engine.SetGlobalFunction("getPreviousTurnAngle", new System.Func<double>(jsGetPreviousTurnAngle));
+		engine.SetGlobalFunction("leftDist", new System.Func<double>(jsGetDistanceFromLeft));
+		engine.SetGlobalFunction("rightDist", new System.Func<double>(jsGetDistanceFromRight));
+		engine.SetGlobalFunction("nextTurnDist", new System.Func<double>(jsGetNextTurnDistance));
+		engine.SetGlobalFunction("nextTurnAngle", new System.Func<double>(jsGetNextTurnAngle));		
+		engine.SetGlobalFunction("prevTurnDist", new System.Func<double>(jsGetPreviousTurnDistance));
+		engine.SetGlobalFunction("prevTurnAngle", new System.Func<double>(jsGetPreviousTurnAngle));
 	}
 	
 	// type double. (float is not a supported type in Jurassic)
