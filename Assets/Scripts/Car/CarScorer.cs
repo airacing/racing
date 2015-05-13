@@ -22,6 +22,7 @@ public class CarScorer : MonoBehaviour {
 	Score score = new Score();
 
 	private AudioSource audio2;
+	private AudioSource audio3;
 	public AudioClip crash;
 	AudioSource[] aSources;
 	bool enableAudio = false;
@@ -37,8 +38,10 @@ public class CarScorer : MonoBehaviour {
 		if (aSources.Length >= 2)
 			enableAudio = true;
 
-		if (enableAudio)
-			audio2 = aSources[1];
+		if (enableAudio) {
+			audio2 = aSources [1];
+			audio3 = aSources [2];
+		}
 	}
 
 	void FixedUpdate(){
@@ -65,6 +68,9 @@ public class CarScorer : MonoBehaviour {
 				gameUIManager.raceTimePanel.SetActive (true);
 				gameUIManager.raceTimeValueText.text = score.raceTime.To2dpString () + " s";
 				gameUIManager.raceTimeCrashesText.text = "(Crashes: "+score.crashCount + ")";
+
+				if (enableAudio)
+					audio3.Play();
 
 				// only submit score if not manual controls
 				if (!AppModel.manualCarControls){
